@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name="Event")
+@Table(name="event")
 @Entity
 @Setter
 @Getter

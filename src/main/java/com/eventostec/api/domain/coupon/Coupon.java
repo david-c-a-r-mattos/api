@@ -29,6 +29,6 @@ public class Coupon
     private Integer discount;
     private Date valid;
     @ManyToOne
-    @JoinColumn(name = "even_id")
+    @JoinColumn(name = "event_id")
     private Event event;
 }
