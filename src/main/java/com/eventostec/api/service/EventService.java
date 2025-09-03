@@ -1,9 +1,9 @@
 package com.eventostec.api.service;
 
-import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.eventostec.api.domain.event.Event;
 import com.eventostec.api.domain.event.EventRequestDTO;
+import com.eventostec.api.repositories.EventRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
@@ -20,14 +20,16 @@ public class EventService
 {
     @Autowired
     private AmazonS3 s3Client;
+    @Autowired
+    private EventRepository repository;
     @Value("${aws.bucket.name}")
     private String bucketName;
     public Event createEvent(EventRequestDTO data)
     {
         String imgUrl = null;
-        if(data.getImage() != null)
+        if(data.getImageUrl() != null)
         {
-           imgUrl =  this.uploadImg(data.getImage());
+           imgUrl =  this.uploadImg(data.getImageUrl());
         }
         Event newEvent = new Event();
         newEvent.setTitle(data.getTitle());
@@ -35,6 +37,8 @@ public class EventService
         newEvent.setDate(new Date(data.getDate()));
         newEvent.setEventUrl(data.getEventUrl());
         newEvent.setImgUrl(imgUrl);
+        newEvent.setRemote(data.getRemote());
+        repository.save(newEvent);
         return newEvent;
     }
     private String uploadImg(MultipartFile multipartFile)
@@ -47,14 +51,11 @@ public class EventService
             file.delete();
             return s3Client.getUrl(bucketName, filename).toString();
         }
-        catch (IOException e) 
+        catch (Exception e)
         {
-            throw new RuntimeException("Falha ao processar arquivo: " + e.getMessage(), e);
+            System.out.println("Falha ao processar arquivo: " + e.getMessage());
+            return "Imagem não definida";
         } 
-        catch (SdkClientException e) 
-        {
-            throw new RuntimeException("Falha ao fazer upload para S3: " + e.getMessage(), e);
-        }
     }
     private File convertMultipartToFile(MultipartFile multipartFile) throws IOException
     {
