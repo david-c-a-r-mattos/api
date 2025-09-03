@@ -91,6 +91,12 @@
             <version>0.9</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.6.26.Final</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     
     <build>

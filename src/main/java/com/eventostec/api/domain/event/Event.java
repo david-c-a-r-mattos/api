@@ -8,8 +8,8 @@ import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.Setter;
 
 @Table(name="event")

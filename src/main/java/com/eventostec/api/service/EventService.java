@@ -1,5 +1,6 @@
 package com.eventostec.api.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.eventostec.api.domain.event.Event;
 import com.eventostec.api.domain.event.EventRequestDTO;
@@ -51,7 +52,7 @@ public class EventService
             file.delete();
             return s3Client.getUrl(bucketName, filename).toString();
         }
-        catch (Exception e)
+        catch (SdkClientException | IOException e)
         {
             System.out.println("Falha ao processar arquivo: " + e.getMessage());
             return "Imagem não definida";
