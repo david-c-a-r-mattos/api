@@ -1,5 +1,6 @@
 package com.eventostec.api.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.eventostec.api.domain.event.Event;
 import com.eventostec.api.domain.event.EventRequestDTO;
@@ -23,17 +24,17 @@ public class EventService
     private String bucketName;
     public Event createEvent(EventRequestDTO data)
     {
-        String imgURL = null;
+        String imgUrl = null;
         if(data.getImage() != null)
         {
-           imgURL =  this.uploadImg(data.getImage());
+           imgUrl =  this.uploadImg(data.getImage());
         }
         Event newEvent = new Event();
         newEvent.setTitle(data.getTitle());
         newEvent.setDescription(data.getDescription());
         newEvent.setDate(new Date(data.getDate()));
         newEvent.setEventUrl(data.getEventUrl());
-        newEvent.setImgUrl(imgURL);
+        newEvent.setImgUrl(imgUrl);
         return newEvent;
     }
     private String uploadImg(MultipartFile multipartFile)
@@ -46,17 +47,20 @@ public class EventService
             file.delete();
             return s3Client.getUrl(bucketName, filename).toString();
         }
-        catch(Exception e)
+        catch(SdkClientException | IOException e)
         {
-            System.out.println("Falha ao fazer upload do arquivo");
+            System.out.println("Falha ao fazer upload do arquivo! "+e.getMessage());
             return null;
         }
     }
     private File convertMultipartToFile(MultipartFile multipartFile) throws IOException
     {
         File convFile = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(multipartFile.getBytes());
+        try(FileOutputStream fos = new FileOutputStream(convFile))
+        {
+            
+            fos.write(multipartFile.getBytes());
+        }
         return convFile;
     }
 }

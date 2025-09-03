@@ -2,7 +2,8 @@ package com.eventostec.api.domain.event;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class EventRequestDTO {
+public class EventRequestDTO 
+{
     private String title;
     private String description;
     private String city;
