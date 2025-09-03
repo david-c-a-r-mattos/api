@@ -47,10 +47,13 @@ public class EventService
             file.delete();
             return s3Client.getUrl(bucketName, filename).toString();
         }
-        catch(SdkClientException | IOException e)
+        catch (IOException e) 
         {
-            System.out.println("Falha ao fazer upload do arquivo! "+e.getMessage());
-            return null;
+            throw new RuntimeException("Falha ao processar arquivo: " + e.getMessage(), e);
+        } 
+        catch (SdkClientException e) 
+        {
+            throw new RuntimeException("Falha ao fazer upload para S3: " + e.getMessage(), e);
         }
     }
     private File convertMultipartToFile(MultipartFile multipartFile) throws IOException
