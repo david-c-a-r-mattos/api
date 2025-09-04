@@ -16,5 +16,5 @@ public class EventRequestDTO
     private String state;
     private Boolean remote;
     private String eventUrl;
-    private MultipartFile imageUrl;
+    private MultipartFile image;
 }
