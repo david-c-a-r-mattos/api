@@ -73,7 +73,8 @@ public class EventService
     }
 }*/
 @Service
-public class EventService {
+public class EventService 
+{
     
     @Autowired
     private AmazonS3 s3Client;
@@ -92,9 +93,11 @@ public class EventService {
     // Tamanho máximo do arquivo (2MB)
     private static final long MAX_FILE_SIZE = 2 * 1024 * 1024;
 
-    public Event createEvent(EventRequestDTO data) {
-        String imgUrl = null;
-        if(data.getImage() != null) {
+    public Event createEvent(EventRequestDTO data) 
+    {
+        String imgUrl = "default-image.jpg";
+        if(data.getImage() != null) 
+        {
             // Validação antes do upload
             validateImageFile(data.getImage());
             imgUrl = this.uploadImg(data.getImage());
@@ -124,7 +127,8 @@ public class EventService {
         }
         
         // Verificar se o arquivo não está vazio
-        if (file.isEmpty()) {
+        if (file.isEmpty()) 
+        {
             throw new IllegalArgumentException("Arquivo vazio");
         }
     }
@@ -134,6 +138,10 @@ public class EventService {
         
         try 
         {
+            if (multipartFile.isEmpty()) 
+            {
+                return "imagem-padrao.jpg";
+            }
             // Upload direto do InputStream sem criar arquivo temporário
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(multipartFile.getContentType());
@@ -147,7 +155,18 @@ public class EventService {
         catch (SdkClientException | IOException e) 
         {
             System.out.println("Falha ao processar arquivo: " + e.getMessage());
-            return "String vazia";
+            if (e instanceof IOException) 
+            {
+                return "erro-leitura-arquivo";
+            } 
+            else if (e instanceof SdkClientException) 
+            {
+                return "erro-conexao-s3";
+            } 
+            else 
+            {
+                return "imagem-indisponivel";
+            }
         }
     }
 
