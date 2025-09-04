@@ -4,6 +4,7 @@ import com.eventostec.api.domain.event.Event;
 import com.eventostec.api.domain.event.EventRequestDTO;
 import com.eventostec.api.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,8 @@ public class EventController
 {
     @Autowired
     private EventService eventService;
-    @PostMapping(consumes = "multipart/form-data")
+    //@PostMapping(consumes = "multipart/form-data")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Event> create(
     @RequestParam("title") String title, 
     @RequestParam(value = "description", required = false) String description, 
@@ -26,9 +28,9 @@ public class EventController
     @RequestParam("state") String state,
     @RequestParam("remote") Boolean remote,
     @RequestParam("eventUrl") String eventUrl,
-    @RequestParam(value = "imageUrl", required = false) MultipartFile imageUrl)
+    @RequestParam(value = "image", required = false) MultipartFile image)
     {
-        EventRequestDTO eventRequestDTO = new EventRequestDTO(title, description, date, city, state, remote, eventUrl, imageUrl);
+        EventRequestDTO eventRequestDTO = new EventRequestDTO(title, description, date, city, state, remote, eventUrl, image);
         Event newEvent = this.eventService.createEvent(eventRequestDTO);
         return ResponseEntity.ok(newEvent);
     }

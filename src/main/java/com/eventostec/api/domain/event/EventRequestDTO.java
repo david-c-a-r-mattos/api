@@ -1,4 +1,5 @@
 package com.eventostec.api.domain.event;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
@@ -16,5 +17,6 @@ public class EventRequestDTO
     private String state;
     private Boolean remote;
     private String eventUrl;
+    @JsonIgnore
     private MultipartFile image;
 }

@@ -143,7 +143,9 @@ public class EventService {
             
             return s3Client.getUrl(bucketName, filename).toString();
             
-        } catch (SdkClientException | IOException e) {
+        } 
+        catch (SdkClientException | IOException e) 
+        {
             System.out.println("Falha ao processar arquivo: " + e.getMessage());
             return "String vazia";
         }
