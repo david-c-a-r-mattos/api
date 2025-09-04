@@ -18,21 +18,15 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event {
+public class Event 
+{
     @Id
     @GeneratedValue
     private UUID id;
-    @Column(name = "title")
     private String title;
-    @Column(name = "description")
     private String description;
-    @Column(name = "imgUrl")
     private String imgUrl;
-    @Column(name = "eventUrl")
     private String eventUrl;
-    @Column(name = "remote")
     private Boolean remote;
-    @Column(name = "date")
     private Date date;
-    
 }
