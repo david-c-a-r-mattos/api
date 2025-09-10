@@ -1,0 +1,20 @@
+package com.eventostec.api.domain.address;
+
+import com.eventostec.api.domain.event.Event;
+import com.eventostec.api.domain.event.EventRequestDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.eventostec.api.repositories.AddressRepository;
+public class AddressService 
+{
+    @Autowired
+    private AddressRepository addressRepository;
+    
+    public Address createAddress(EventRequestDTO data, Event event)
+    {
+        Address address = new Address();
+        address.setCity(data.getCity());
+        address.setUf(data.getState());
+        address.setEvent(event);
+        return addressRepository.save(address);
+    }
+}

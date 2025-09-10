@@ -2,7 +2,8 @@ package com.eventostec.api.domain.event;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class EventRequestDTO {
+public class EventRequestDTO 
+{
     private String title;
     private String description;
     private Long date;
@@ -26,6 +27,7 @@ public class EventRequestDTO {
         this.eventUrl = eventUrl;
         this.image = image;
     }
+  
     
     // Getters e Setters obrigatórios
     public String getTitle() { return title; }

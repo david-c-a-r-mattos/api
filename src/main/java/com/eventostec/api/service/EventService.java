@@ -6,14 +6,19 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import com.eventostec.api.domain.event.Event;
 import com.eventostec.api.domain.event.EventRequestDTO;
+import com.eventostec.api.domain.event.EventResponseDTO;
 import com.eventostec.api.repositories.EventRepository;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,14 +27,16 @@ public class EventService
 {
     private final S3Client s3Client;
     private final EventRepository repository;
-    
+    private AddressService addressService;
+  
     @Value("${aws.s3.bucket:default-bucket}") // valor padrão
     private String bucketName;
     
-    public EventService(S3Client s3Client, EventRepository repository) 
+    public EventService(S3Client s3Client, EventRepository repository, AddressService addressService) 
     {
         this.s3Client = s3Client;
         this.repository = repository;
+        this.addressService = addressService;
     }
     
     public Event createEvent(EventRequestDTO data)
@@ -48,7 +55,15 @@ public class EventService
         newEvent.setImgUrl(imgUrl);
         newEvent.setRemote(data.getRemote());
         
-        return repository.save(newEvent);
+        repository.save(newEvent);
+        
+        if(!data.getRemote())
+        {
+            this.addressService.createAddress(data, newEvent);
+        } 
+        return newEvent;
+        
+        
     }
     
     private String uploadImg(MultipartFile multipartFile)
@@ -86,5 +101,24 @@ public class EventService
             System.out.println("Falha ao processar arquivo: " + e.getMessage());
             return "exception.jpg";
         } 
+    }
+    public List<EventResponseDTO> getUpcomingEvents(int page, int size)
+    {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Event> eventsPage = this.repository.findUpcomingEvents(new Date(), pageable);
+        String city = "";
+        String state = "";
+
+        return eventsPage.map(event -> new EventResponseDTO(
+            event.getId(), 
+            city, 
+            state, 
+            event.getTitle(), 
+            event.getDescription(), 
+            event.getDate(), 
+            event.getEventUrl(), 
+            event.getImgUrl(), 
+            event.getRemote()
+        )).getContent(); // Use getContent() para obter a lista
     }
 }
