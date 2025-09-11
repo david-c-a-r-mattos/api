@@ -25,7 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class EventService {
+public class EventService 
+{
     private final S3Client s3Client;
     private final EventRepository repository;
     private AddressService addressService;
@@ -42,9 +43,11 @@ public class EventService {
         this.addressService = addressService;
     }
     
-    public Event createEvent(EventRequestDTO data) {
+    public Event createEvent(EventRequestDTO data) 
+    {
         String imgUrl = "default-image.jpg";
-        if (data.getImage() != null && !data.getImage().isEmpty()) {
+        if (data.getImage() != null && !data.getImage().isEmpty()) 
+        {
            imgUrl = this.uploadImg(data.getImage());
         }
         
@@ -53,9 +56,12 @@ public class EventService {
         newEvent.setDescription(data.getDescription());
         
         // Converter Long timestamp para Date
-        if (data.getDate() != null) {
+        if (data.getDate() != null) 
+        {
             newEvent.setDate(new Date(data.getDate()));
-        } else {
+        } 
+        else 
+        {
             newEvent.setDate(new Date()); // Data atual como fallback
         }
         
@@ -77,8 +83,10 @@ public class EventService {
         return newEvent;
     }
     
-    private String uploadImg(MultipartFile multipartFile) {
-        if (s3Client == null) {
+    private String uploadImg(MultipartFile multipartFile) 
+    {
+        if (s3Client == null) 
+        {
             System.out.println("S3Client não configurado - usando imagem padrão");
             return "default-image.jpg";
         }
@@ -86,7 +94,8 @@ public class EventService {
         String filename = UUID.randomUUID() + "-" + 
                          Objects.requireNonNull(multipartFile.getOriginalFilename());
         
-        try {
+        try 
+        {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(filename)
@@ -103,7 +112,9 @@ public class EventService {
             
             return fileUrl;
             
-        } catch (SdkException | IOException e) {
+        } 
+        catch (SdkException | IOException e) 
+        {
             System.out.println("Falha ao processar arquivo: " + e.getMessage());
             return "exception.jpg";
         }
@@ -120,8 +131,8 @@ public class EventService {
 
         return eventsPage.map(event -> new EventResponseDTO(
             event.getId(),
-            (event.getAddress().getCity() != null) ? event.getAddress().getCity() : "",
-            (event.getAddress().getUf() != null) ? event.getAddress().getUf() : "",
+            (event.getAddress() != null) ? event.getAddress().getCity() : "",
+            (event.getAddress() != null) ? event.getAddress().getUf() : "",
             event.getTitle(), 
             event.getDescription(), 
             event.getDate(), 
@@ -156,8 +167,8 @@ public class EventService {
 
         return eventsPage.map(event -> new EventResponseDTO(
             event.getId(),
-            (event.getAddress().getCity() != null) ? event.getAddress().getCity() : null,
-            (event.getAddress().getUf() != null) ? event.getAddress().getUf() : null,
+            (event.getAddress() != null) ? event.getAddress().getCity() : "",
+            (event.getAddress() != null) ? event.getAddress().getUf() : "",
             event.getTitle(), 
             event.getDescription(), 
             event.getDate(),
