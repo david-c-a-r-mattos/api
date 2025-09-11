@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.Date;
 import java.util.List;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -136,16 +137,30 @@ public class EventService {
         title = (title != null) ? title : ""; 
         city = (city != null) ? city : ""; 
         uf = (uf != null) ? uf : ""; 
-        startDate = (startDate != null) ? startDate : new Date(0); 
-        endDate = (endDate != null) ? endDate : new Date();
+
+        // Se startDate for nulo, buscar desde uma data muito antiga
+        if (startDate == null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(1900, Calendar.JANUARY, 1); // Data muito antiga
+            startDate = calendar.getTime();
+        }
+
+        if (endDate == null) {
+            // Data muito futura
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(2100, Calendar.DECEMBER, 31);
+            endDate = calendar.getTime();
+        }
+
         Page<Event> eventsPage = this.repository.findFilteredEvents(title, city, uf, startDate, endDate, pageable);
+
         return eventsPage.map(event -> new EventResponseDTO(
             event.getId(),
-            event.getAddress().getCity(),
-            event.getAddress().getUf(),
+            (event.getAddress() != null) ? event.getAddress().getCity() : null,
+            (event.getAddress() != null) ? event.getAddress().getUf() : null,
             event.getTitle(), 
             event.getDescription(), 
-            event.getDate(), 
+            event.getDate(),
             event.getEventUrl(), 
             event.getImgUrl(), 
             event.getRemote()
