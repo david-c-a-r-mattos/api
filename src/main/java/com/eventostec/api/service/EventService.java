@@ -120,8 +120,8 @@ public class EventService {
 
         return eventsPage.map(event -> new EventResponseDTO(
             event.getId(),
-            event.getAddress() != null ? event.getAddress().getCity() : "",
-            event.getAddress() != null ? event.getAddress().getUf() : "",
+            (event.getAddress().getCity() != null) ? event.getAddress().getCity() : "",
+            (event.getAddress().getUf() != null) ? event.getAddress().getUf() : "",
             event.getTitle(), 
             event.getDescription(), 
             event.getDate(), 
@@ -156,8 +156,8 @@ public class EventService {
 
         return eventsPage.map(event -> new EventResponseDTO(
             event.getId(),
-            (event.getAddress() != null) ? event.getAddress().getCity() : null,
-            (event.getAddress() != null) ? event.getAddress().getUf() : null,
+            (event.getAddress().getCity() != null) ? event.getAddress().getCity() : null,
+            (event.getAddress().getUf() != null) ? event.getAddress().getUf() : null,
             event.getTitle(), 
             event.getDescription(), 
             event.getDate(),
