@@ -19,7 +19,7 @@ public class CouponService
     private CouponRepository couponRepository;
     @Autowired
     private EventRepository eventRepository;
-    public Coupon addCouponToEvent(UUID eventId, CouponRequestDTO couponData)
+    public Coupon addCouponsToEvent(UUID eventId, CouponRequestDTO couponData)
     {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not Fouund!"));
         Coupon coupon = new Coupon();
