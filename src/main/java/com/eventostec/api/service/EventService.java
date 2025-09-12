@@ -1,10 +1,12 @@
 package com.eventostec.api.service;
 
+import com.eventostec.api.domain.coupon.Coupon;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import com.eventostec.api.domain.event.Event;
+import com.eventostec.api.domain.event.EventDetailsDTO;
 import com.eventostec.api.domain.event.EventRequestDTO;
 import com.eventostec.api.domain.event.EventResponseDTO;
 import com.eventostec.api.repositories.EventRepository;
@@ -16,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -30,6 +33,7 @@ public class EventService
     private final S3Client s3Client;
     private final EventRepository repository;
     private AddressService addressService;
+    private CouponService couponService;
     
     // Formato para converter Date para String
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -176,5 +180,26 @@ public class EventService
             event.getImgUrl(), 
             event.getRemote()
         )).getContent();
+    }
+    public EventDetailsDTO getEventDetails(UUID eventId)
+    {
+        Event event = repository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not find!"));
+        List<Coupon> coupons = couponService.consultCoupons(eventId, new Date());
+        List<EventDetailsDTO.CouponDTO> couponDTOs = coupons.stream().map(coupon -> new EventDetailsDTO.CouponDTO(
+                coupon.getCode(),
+                coupon.getDiscount(),
+                coupon.getValid()))
+                .collect(Collectors.toList());
+        return new EventDetailsDTO(
+                event.getId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getDate(),
+                (event.getAddress() != null) ? event.getAddress().getCity() : "",
+                (event.getAddress() != null) ? event.getAddress().getUf() : "",
+                event.getImgUrl(),
+                event.getEventUrl(),
+                couponDTOs
+        );
     }
 }
